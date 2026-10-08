@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>BD Number Generator</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:monospace;
+}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(circle at top,#063b25 0%,#020807 35%,#000 75%);
+    color:#00ff88;
+    padding:25px 15px;
+}
+
+.container{
+    max-width:500px;
+    margin:auto;
+}
+
+.header{
+    text-align:center;
+    margin-bottom:25px;
+}
+
+.logo{
+    width:70px;
+    height:70px;
+    margin:auto;
+    border:2px solid #00ff88;
+    border-radius:18px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:30px;
+    box-shadow:0 0 25px #00ff8844;
+    background:#00140b;
+}
+
+h1{
+    margin-top:15px;
+    font-size:25px;
+    letter-spacing:2px;
+}
+
+.subtitle{
+    color:#599c7c;
+    font-size:12px;
+    margin-top:6px;
+}
+
+.card{
+    background:rgba(2,12,8,.92);
+    border:1px solid #00ff8840;
+    border-radius:20px;
+    padding:20px;
+    box-shadow:0 0 35px #00ff8815;
+}
+
+.input-group{
+    margin-bottom:18px;
+}
+
+label{
+    display:block;
+    color:#75c99e;
+    font-size:12px;
+    margin-bottom:8px;
+    letter-spacing:1px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    border-radius:12px;
+    border:1px solid #075d37;
+    outline:none;
+    background:#010806;
+    color:#00ff88;
+    font-size:18px;
+}
+
+input:focus{
+    border-color:#00ff88;
+    box-shadow:0 0 12px #00ff8825;
+}
+
+.generate{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:#00ff88;
+    color:#001b0d;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    letter-spacing:1px;
+    box-shadow:0 0 20px #00ff8840;
+    transition:.2s;
+}
+
+.generate:hover{
+    box-shadow:0 0 30px #00ff8870;
+}
+
+.generate:active{
+    transform:scale(.97);
+}
+
+.result-box{
+    margin-top:20px;
+    display:none;
+}
+
+.result-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:10px;
+}
+
+.result-title{
+    font-size:13px;
+    color:#75c99e;
+}
+
+.count{
+    font-size:12px;
+    color:#00ff88;
+}
+
+.results{
+    max-height:400px;
+    overflow-y:auto;
+    border:1px solid #064b2e;
+    border-radius:12px;
+    background:#010604;
+}
+
+.number{
+    padding:13px 15px;
+    border-bottom:1px solid #06301f;
+    color:#00ff88;
+    font-size:15px;
+}
+
+.number:last-child{
+    border-bottom:none;
+}
+
+.number span{
+    color:#39795b;
+    margin-right:10px;
+}
+
+.copy-all{
+    margin-top:12px;
+    width:100%;
+    padding:12px;
+    border:1px solid #00ff88;
+    border-radius:10px;
+    background:transparent;
+    color:#00ff88;
+    cursor:pointer;
+}
+
+.copy-all:hover{
+    background:#00ff8812;
+}
+
+.footer{
+    text-align:center;
+    color:#285c43;
+    font-size:11px;
+    margin-top:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">⌁</div>
+        <h1>BD NUMBER GEN</h1>
+        <div class="subtitle">RANDOM BANGLADESH NUMBER GENERATOR</div>
+    </div>
+
+    <div class="card">
+
+        <div class="input-group">
+            <label>NUMBER PREFIX</label>
+            <input
+                id="prefix"
+                type="text"
+                value="017"
+                maxlength="3"
+                inputmode="numeric"
+            >
+        </div>
+
+        <div class="input-group">
+            <label>HOW MANY NUMBERS?</label>
+            <input
+                id="amount"
+                type="number"
+                value="10"
+                min="1"
+                max="1000"
+                inputmode="numeric"
+            >
+        </div>
+
+        <button class="generate" onclick="generateNumbers()">
+            ⚡ GENERATE NUMBERS
+        </button>
+
+        <div class="result-box" id="resultBox">
+
+            <div class="result-header">
+                <div class="result-title">GENERATED NUMBERS</div>
+                <div class="count" id="count"></div>
+            </div>
+
+            <div class="results" id="results"></div>
+
+            <button class="copy-all" onclick="copyAll()">
+                COPY ALL
+            </button>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        3 DIGIT PREFIX + 8 RANDOM DIGITS = 11 DIGITS
+    </div>
+
+</div>
+
+
+<script>
+
+let generatedNumbers = [];
+
+function generateNumbers(){
+
+    let prefix = document.getElementById("prefix").value
+        .replace(/\D/g,"");
+
+    let amount = parseInt(
+        document.getElementById("amount").value
+    );
+
+    if(prefix.length !== 3){
+        alert("Prefix must contain exactly 3 digits.");
+        return;
+    }
+
+    if(!amount || amount < 1 || amount > 1000){
+        alert("Enter a number between 1 and 1000.");
+        return;
+    }
+
+    generatedNumbers = [];
+
+    let html = "";
+
+    for(let i = 0; i < amount; i++){
+
+        let randomPart = "";
+
+        for(let j = 0; j < 8; j++){
+            randomPart += Math.floor(Math.random() * 10);
+        }
+
+        let localNumber = prefix + randomPart;
+
+        let fullNumber = "+88" + localNumber;
+
+        generatedNumbers.push(fullNumber);
+
+        html += `
+            <div class="number">
+                <span>${String(i + 1).padStart(3,"0")}</span>
+                ${fullNumber}
+            </div>
+        `;
+    }
+
+    document.getElementById("results").innerHTML = html;
+
+    document.getElementById("count").textContent =
+        amount + " NUMBERS";
+
+    document.getElementById("resultBox").style.display = "block";
+}
+
+
+function copyAll(){
+
+    if(generatedNumbers.length === 0) return;
+
+    let text = generatedNumbers.join("\n");
+
+    navigator.clipboard.writeText(text).then(() => {
+
+        let button = document.querySelector(".copy-all");
+
+        button.textContent = "✓ COPIED";
+
+        setTimeout(() => {
+            button.textContent = "COPY ALL";
+        },1500);
+
+    });
+
+}
+
+</script>
+
+</body>
+</html>
